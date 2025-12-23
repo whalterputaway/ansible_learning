@@ -1,0 +1,61 @@
+- name: install and configure nginx
+  hosts: all
+  become: true
+
+
+  tasks:
+    - name: install nginx Ubuntu
+      when: ansible_distribution == "Ubuntu"
+      block:
+        - name: install nginx (Ubuntu)
+          package:
+            name: nginx
+            state: latest
+        
+        - name: configure nginx
+          service:
+            name: nginx
+            state: started
+            enabled: yes
+
+        - name: configure index.html
+          copy:
+            dest: /var/www/html
+            src: index.html
+        
+          notify: restart nginx
+
+
+
+
+    - name: install nginx CentOS
+      when: ansible_distribution == "CentOS"
+      block:
+        - name: install nginx (CentOS)
+          package:
+            name: nginx
+            state: latest
+        
+        - name: configure nginx
+          service:
+            name: nginx
+            state: started
+            enabled: yes
+
+        - name: configure index.html
+          copy:
+            dest: /var/www/html
+            src: ./index.html
+        
+          notify: restart nginx 
+
+
+
+  handlers:
+    - name: restart nginx
+      service:
+        name: nginx
+        state: restarted
+
+
+
