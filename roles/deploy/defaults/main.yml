@@ -1,0 +1,4 @@
+#SPDX-License-Identifier: MIT-0
+---
+source_file: "./index.j2"
+destination_file: "/var/www/html"
