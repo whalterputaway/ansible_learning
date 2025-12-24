@@ -1,0 +1,40 @@
+- name: backup logs playbook
+  hosts: all
+  become: no
+
+
+  tasks:
+    - name: create log file
+      file:
+        path: "/tmp/{{ item }}.log"
+        state: touch
+      loop:
+        - app
+        - erorr
+        - access
+        - debug
+        - system
+
+    - name: архивировать логи
+      archive:
+        path: "/tmp/{{ item }}.log"
+        dest: "/tmp/{{ item }}.log.gz"
+        format: gz
+      loop:
+        - app
+        - erorr
+        - access
+        - debug
+        - system
+
+    - name: удалить исходные логи, при наличии архивов
+      file:
+        path: "/tmp/{{ item }}.log"
+        state: absent
+      loop:
+        - app
+        - erorr
+        - access
+        - debug
+        - system
+
