@@ -1,0 +1,22 @@
+- name: example of error handling
+  hosts: all
+  become: true
+
+  tasks:
+    - name: task 1
+      package: 
+        name: unexisted_package
+        state: present
+      ignore_errors: true
+
+    - name: task 2
+      shell: echo helloworld1
+      register: result
+      failed_when: "'none' in result.stdout"
+
+    - debug:
+        var: result
+
+
+    - name: task3
+      shell: echo helloworld2
