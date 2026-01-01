@@ -1,0 +1,49 @@
+- name: deploy
+  hosts: all
+  become: yes
+  vars:
+    source_file: "./index.j2"
+    destination_file: "/var/www/html"
+    loco: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          65663863353939623465303835353236383062353561323634393138643837383038656461366163
+          3232313561363862323235333830323530346461393137340a656662356637376430396639303839
+          63613630646463323635633536393665643262356466383365303039373533386265343166643338
+          3133343430383635640a616332323164366531383834326463613863636139353766623961643666
+          6632
+
+
+  tasks:
+    - debug:
+        msg: "my password is {{ loco }}"
+    - name: install all deps (ubuntu)
+      when: ansible_distribution == "Ubuntu"
+      apt:
+        name: nginx
+        state: present
+
+    - name: install all deps (centos)
+      when: ansible_distribution == "CentOS"
+      yum:
+        name: nginx
+        state: present
+      
+    - name: copying source files
+      template:
+        src: "{{ source_file }}"
+        dest: "{{ destination_file }}/index.html"
+      notify: restart nginx
+
+
+  handlers:
+    - name: restart nginx
+      service:
+        name: nginx
+        state: restarted
+        enabled: yes
+    
+
+
+
+
+  

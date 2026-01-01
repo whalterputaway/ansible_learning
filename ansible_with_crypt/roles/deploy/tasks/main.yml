@@ -1,0 +1,19 @@
+#SPDX-License-Identifier: MIT-0
+---
+- name: install all deps (ubuntu)
+  when: ansible_distribution == "Ubuntu"
+  apt:
+    name: nginx
+    state: present
+
+- name: install all deps (centos)
+  when: ansible_distribution == "CentOS"
+  yum:
+    name: nginx
+    state: present
+      
+- name: copying source files
+  template:
+    src: "{{ source_file }}"
+    dest: "{{ destination_file }}/index.html"
+  notify: restart nginx

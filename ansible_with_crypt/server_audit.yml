@@ -1,0 +1,50 @@
+- name: system audit
+  hosts: all
+  gather_facts: yes
+
+
+  tasks:
+    - name: output system_facts
+      debug: 
+        msg: "OS: {{ ansible_distribution }}, Total memory MB: {{ ansible_memory_mb.real.total }}"
+    
+    - name: disk free
+      shell: df -h /
+      register: diskfree
+
+    - name: uptime
+      shell: uptime
+      register: uptime
+
+    - debug:
+        msg: "{{ diskfree.stdout }}"
+    - debug:
+        msg: "{{ uptime.stdout }}"
+    - name: gathering
+      ansible.builtin.set_fact:
+        clean_output: "disk free: {{ diskfree.stdout }}, uptime: {{ uptime.stdout }}"
+
+    - debug:
+        var: clean_output
+  
+    - name: reporting
+      ansible.builtin.set_fact:
+        audit_report:
+          hostname: "{{ ansible_hostname  }}"
+          os: "{{ ansible_distribution }}"
+          memory: "{{ ansible_memory_mb.real.total }}"
+          root_disk_usage: "{{ diskfree.stdout }}"
+          uptime: "{{ uptime.stdout }}"
+    
+    - name: create file report
+      file: dest=~/report state=touch mode=0644
+    
+    - name: echo report to file
+      copy:
+        content: "{{ audit_report }}"
+        dest: "{{ ansible_user_dir }}/report"
+
+        
+
+
+

@@ -1,0 +1,17 @@
+- name: test vars and debug
+  hosts: all
+  vars:
+    secret: hui
+
+  tasks:
+    - name: print some
+      debug:
+        msg: "secret is {{secret}}"
+    - debug:
+        var: ansible_distribution
+    
+    - shell: uptime
+      register: result
+
+    - debug:
+        var: result

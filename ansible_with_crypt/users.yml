@@ -1,0 +1,17 @@
+- name: users by loops
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: create users
+      user:
+        name: "{{ item.name }}"
+        create_home: "{{ item.create_home }}"
+        password: "{{ item.password }}"
+      loop:
+        - { name: michael, create_home: true, password: "1234"}
+        - { name: john, create_home: true, password: "1234"}
+        - { name: eugene, create_home: true, password: "1234"}
+
+      
+        
